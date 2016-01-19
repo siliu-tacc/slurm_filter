@@ -1,0 +1,122 @@
+#
+# Runtime options for SLURM job submission filter
+#
+
+[tacc_filter] 
+
+check_home                = true
+check_work                = true 
+check_scratch             = true 
+check_queue_acls          = true
+check_queue_runlimits     = true 
+check_accounting          = false
+check_jobname             = true
+check_ssh_keys            = true
+restrict_submission_hosts = true
+restrict_max_user_jobs    = true 
+
+check_reservation         = true  
+# The last one is necessary only for Wrangler at this time
+
+queue_acl_denial_message = 'One or more of your previous batch jobs have been identified
+as potentially causing system problems. Please contact TACC
+support if you have not already been contacted directly in
+order to re-enable queue access.'
+
+submission_hosts          = 'login0 login1 login2 login3 login4 staff'
+
+#accounting_check_binary   = /usr/local/bin/accounting_check_prod.pl
+#user_job_binary           = /usr/local/bin/num_user_jobs
+user_job_binary            = /home1/01255/siliu/SLURM/plugin_TACC/slurm_job_filter_15/num_user_jobs
+
+
+#-----------------------------------------------------------------------
+# Queue ACLs. 
+# 
+# Queue access control lists are categorized into two types: public
+# and private. 
+#
+# Public queues are open to *all* users unless a particular userId is
+# blacklisted via the options below (blacklist users denoted with a !
+# sign). Alternatively, private queue are only open to those users
+# defined in the ACL.
+#
+# Notes: If no ACL is provided for a queue, it is assumed public. An
+# error will be encountered at job submission time if a queue is
+# declared to be both public and private.
+# -----------------------------------------------------------------------
+
+[tacc_filter/queue_acls/public]
+
+##development = '!root !gmhenry !rsdubtso !heppo101 !rmurty !bliviero !anaraiki !top500 !gskinner !kgoto !efeguney'
+ALL         = '!root '
+normal      = '!root '
+development = '!root '
+single      = '!root '
+vis         = '!root '
+gpu         = '!root '
+
+
+[tacc_filter/queue_acls/private]
+large = '!root minyard timm dgignac bbarth mclay milfeld cazes viennej eijkhout siliu djames agomez rauta hliu chenk huang cproctor rtevans mccalpin lars lwilson carlos alamas vtrue arash'
+
+#---------------
+# Max Job Rules 
+# --------------
+
+[tacc_filter/max_jobs]
+# default for all users
+total_user_jobs = 100
+
+
+
+[tacc_filter/queue_size_limits/normal]
+
+# General limit 
+max_cores = 8208 
+max_hours = 48
+max_jobs  = 50
+
+[tacc_filter/queue_size_limits/large]
+
+minyard_max_cores=60000
+minyard_max_jobs = 10
+
+max_cores = 16416
+max_hours = 24
+max_jobs = 3
+
+bbarth_max_cores=24000
+bbarth_max_hours=48
+
+carlos_max_cores=60000
+carlos_max_hours=48
+carlos_max_jobs = 3
+
+cazes_max_cores=60000
+cazes_max_hours=48
+cazes_max_jobs=3
+
+[tacc_filter/queue_size_limits/development]
+
+max_cores = 528
+max_hours = 2
+max_jobs  = 1
+
+[tacc_filter/queue_size_limits/gpu]
+
+max_cores = 80
+max_hours = 24
+max_jobs  = 4
+
+[tacc_filter/queue_size_limits/vis]
+
+max_cores = 80
+max_hours = 8
+max_jobs  = 4
+
+
+
+[tacc_filter/reservation]
+
+

@@ -1,0 +1,17 @@
+#!/bin/bash
+
+MYUSER=$1
+MAX_ALLOWED=$2
+
+if [ $# -gt 2 ]; then
+    QUEUE=$3
+    igot=`/usr/local/bin/showq -U $MYUSER -l | grep $QUEUE  | wc -l`
+else
+    igot=`/usr/local/bin/showq -U $MYUSER | grep Total  | awk '{print $3}'`
+fi
+
+if [ $igot -ge $MAX_ALLOWED ];then
+    exit 1
+else
+    exit 0
+fi

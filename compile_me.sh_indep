@@ -1,0 +1,58 @@
+#!/bin/bash
+
+#This is the test version developed by Si Liu
+
+#Modofied: Jan 15 2015
+#To make it work on both Lonestar 5 and Stampede
+#This should work on Lonestar 5 at this time
+#Last modified: Sep 30 2015
+
+rm -rf *.so
+
+currenthost=`hostname -f`
+target=slurmfilter-1.1
+
+if [[ $currenthost == *"ls5"* ]]
+then
+#Lonestar Only
+        SLURM_LIB=/opt/slurm/15.08.5/lib64
+        SLURM_INCLUDE=/opt/slurm/15.08.5/include
+else
+#Stampede, Maverick, or Wrangler
+        SLURM_LIB=/usr/lib64
+        SLURM_INCLUDE=/usr/include
+fi
+
+gcc -fPIC -shared -I${SLURM_INCLUDE} tacc_welcome.c  -o tacc_welcome.so
+
+gcc -fPIC -shared -I${SLURM_INCLUDE} tacc_deny.c -o tacc_deny.so
+
+gcc -g -I. -I./common/getpot -I${SLURM_INCLUDE} -fPIC -shared -o tacc_submission_filter.so filesystem_availability.cpp \
+       utils.cpp parser_input.cpp driver.cpp queue_acls.cpp queue_limits.cpp submit_host.cpp tacc_submission_filter.c    \
+       ssh_keys.cpp accounting.cpp vmcalo.cpp jobname.cpp check_reservation.cpp -lstdc++
+
+chmod 755 *.so
+
+date > timestamp
+whoami >> timestamp
+hostname -f  >> timestamp
+
+if [[ $currenthost == *"ls5"* ]]
+then
+	mkdir -p ../slurmfilter_nogrvy_LS5/${target}
+	cp *.so ../slurmfilter_nogrvy_LS5/${target}
+	cp timestamp ../slurmfilter_nogrvy_LS5/${target}
+	cd ../slurmfilter_nogrvy_LS5
+	tar czf ${target}.tar.gz ${target} 
+	chmod 755 ${target}.tar.gz
+else
+	mkdir -p ../slurmfilter_nogrvy_SP/${target}
+        cp *.so ../slurmfilter_nogrvy_SP/${target}
+        cp timestamp ../slurmfilter_nogrvy_SP/${target}
+        cd ../slurmfilter_nogrvy_SP
+        tar czf ${target}.tar.gz ${target}
+	chmod 755 ${target}.tar.gz
+
+fi
+
+
