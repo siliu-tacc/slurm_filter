@@ -23,6 +23,9 @@ void enforce_accounting(string User, string Queue, int cores, int nodes, string 
 			int runlimit, Parser_Input *iParse)
 {
 
+//Debugging purposes
+//printf("My Project: %s " , Project.c_str());
+
   printf("--> Checking available allocation ");
 
   if( !Project.empty() )
@@ -87,7 +90,7 @@ void enforce_accounting(string User, string Queue, int cores, int nodes, string 
       check_command << " " << Project;
       check_command << "> " << command_results;
 
-      //printf("executing %s\n",check_command.str().c_str());
+//    printf("executing %s\n",check_command.str().c_str());
       
       int cmd_return = system(check_command.str().c_str());
 

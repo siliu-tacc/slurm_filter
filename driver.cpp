@@ -158,14 +158,17 @@ extern "C" {
 
   act_string   = getenv("SLURM_TACC_ACCOUNT");
   //if( (act_string != NULL) || (strlen(act_string) == 0) )
-/*
+
+
+//This part is necessary for Stampede, Lonestar 5
+//The Wrangler setting is different
   if( (act_string != NULL) )
     {
       //printf("we got %p, size = %i\n",act_string,strlen(act_string));
       //strcpy(act_string,Account.c_str());
       Account = act_string;
     }
-*/
+
 
 
   // ------------
