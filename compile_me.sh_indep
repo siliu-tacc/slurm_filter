@@ -15,8 +15,8 @@ target=slurmfilter-1.1
 if [[ $currenthost == *"ls5"* ]]
 then
 #Lonestar Only
-        SLURM_LIB=/opt/slurm/15.08.5/lib64
-        SLURM_INCLUDE=/opt/slurm/15.08.5/include
+        SLURM_LIB=/opt/slurm/15.08.7/lib64
+        SLURM_INCLUDE=/opt/slurm/15.08.7/include
 	ln -sf queue_limits_ls5.cpp queue_limits.cpp
 else
 #Stampede, Maverick, or Wrangler
