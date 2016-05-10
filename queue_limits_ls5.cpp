@@ -89,19 +89,19 @@ void enforce_queue_limits(string User, string Queue, int cpus, int nodes, int ru
       #endif
 
       if(current <= expired)
-	{
-	  override_allowed = true;
+      {
+          override_allowed = true;
           #if DEBUG
-	  printf("within valid override time\n");
+          printf("within valid override time\n");
           #endif
-	}
+      }
       else
-	{
-	  override_allowed = false;
+      {
+          override_allowed = false;
           #if DEBUG
-	  printf("override time expired\n");
+          printf("override time expired\n");
           #endif
-	}
+      }
     }
   else
     override_allowed = true;

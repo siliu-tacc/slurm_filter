@@ -36,7 +36,7 @@ void verify_filesystem_availability(const char *fs_name, const char *env_name)
 
   if( check_file_path(filepath) != 0)
     {
-      printf("FAILED\n");
+      printf("FAILED (invalid file path)\n");
       exit(1);
     }
 
@@ -46,14 +46,14 @@ void verify_filesystem_availability(const char *fs_name, const char *env_name)
 
   if(fp_test == NULL)
     {
-      printf("FAILED\n");
+      printf("FAILED to open test file\n");
       exit(1);
     }
 
   if (fprintf(fp_test,"The answer is %i\n",42) < 0 )
     {
       fclose(fp_test);
-      printf("FAILED\n");
+      printf("FAILED to write to test file!\n");
       exit(1);
     }
   else 

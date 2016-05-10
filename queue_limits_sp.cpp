@@ -3,14 +3,14 @@
 #include <cstring>
 #include <ctime>
 #include <iostream>
-#include <grvy.h>
+#include <parser_input.h>
 #include <sys/stat.h>
 #include <sstream>
+#include <math.h>
 
-using namespace GRVY;
 using namespace std;
 
-void enforce_queue_limits(string User, string Queue, int cpus, int nodes, int runlimit_secs, GRVY_Input_Class *iParse)
+void enforce_queue_limits(string User, string Queue, int cpus, int nodes, int runlimit_secs, Parser_Input *iParse)
 {
   int cores_per_node;
   int max_cores_allowed;
@@ -73,8 +73,6 @@ void enforce_queue_limits(string User, string Queue, int cpus, int nodes, int ru
   if(iParse->Read_Var(user_expire_key.c_str(),&expire_date) )
     expiration_enforced = true;
 
-  grvy_printf(GRVY_DEBUG,"\n");
-
   // Note on implementation logic: we only want to use override
   // options if the user request exceeds the default values;
   // otherwise, we just revert to the default settings.
@@ -85,20 +83,25 @@ void enforce_queue_limits(string User, string Queue, int cpus, int nodes, int ru
 
       string expired = expire_date + " 23:59:59";
       string current = buf;
-
-      grvy_printf(GRVY_DEBUG,"Current    date = %s\n",current.c_str());
-      grvy_printf(GRVY_DEBUG,"Expiration date = %s\n",expired.c_str());
+      #if DEBUG
+      printf("Current    date = %s\n",current.c_str());
+      printf("Expiration date = %s\n",expired.c_str());
+      #endif
 
       if(current <= expired)
-	{
-	  override_allowed = true;
-	  grvy_printf(GRVY_INFO,"within valid override time\n");
-	}
+      {
+          override_allowed = true;
+          #if DEBUG
+          printf("within valid override time\n");
+          #endif
+      }
       else
-	{
-	  override_allowed = false;
-	  grvy_printf(GRVY_INFO,"override time expired\n");
-	}
+      {
+          override_allowed = false;
+          #if DEBUG
+          printf("override time expired\n");
+          #endif
+      }
     }
   else
     override_allowed = true;
@@ -128,9 +131,8 @@ void enforce_queue_limits(string User, string Queue, int cpus, int nodes, int ru
     {
       if(total_cores > max_cores_allowed || (float(runlimit_secs/3600.0) > max_hours_allowed) )
 	{
-	  cout<<"total cores: "<<total_cores<<endl;
-	  cout<<"max_cores_allowed: "<<max_cores_allowed<<endl;
-
+//	  cout<<"total cores: "<<total_cores<<endl;
+//	  cout<<"max_cores_allowed: "<<max_cores_allowed<<endl;
           printf("FAILED\n\n\n");
 	  printf("  Requested job not within current queue limits\n");
 	  printf("  --> Queue %s Max Limits: %6i Cores, %3i Hours\n\n",Queue.c_str(),max_cores_allowed,max_hours_allowed);
@@ -138,15 +140,16 @@ void enforce_queue_limits(string User, string Queue, int cpus, int nodes, int ru
 	}
 
     }
-
-  //  grvy_printf(GRVY_INFO,"checking for queue_size_limits (%s\n)",Queue.c_str());
-
+  #if DEBUG
+    printf("checking for queue_size_limits (%s\n)",Queue.c_str());
+  #endif
   if(iParse->Read_Var("tacc_filter/queue_size_limits/" + Queue + "/max_jobs" ,
 		      &max_jobs_per_queue))
     {
       // Queue has a max number of jobs limit set, check if user has too many in the queue
-
-      //      grvy_printf(GRVY_INFO,"we have a winner\n");
+        #if DEBUG
+            printf("we have a winner\n");
+        #endif
 
       iret = iParse->Read_Var("tacc_filter/user_job_binary",&check_command);
       bool cmd_is_executable = false;
@@ -171,7 +174,9 @@ void enforce_queue_limits(string User, string Queue, int cpus, int nodes, int ru
       full_command << " " << max_jobs_per_queue;
       full_command << " " << Queue;
 
-      grvy_printf(GRVY_INFO,"command to run = %s\n",full_command.str().c_str());
+      #if DEBUG
+         printf(INFO,"command to run = %s\n",full_command.str().c_str());
+      #endif
 
       int cmd_return = system(full_command.str().c_str());
 
