@@ -6,7 +6,8 @@
 #include <fstream>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <parser_input.h>
+#include "tacc_submission_filter.h"
+#include "parser_input.h"
 #include "utils.h"
 
 using namespace std;
@@ -19,42 +20,60 @@ void stop_on_error()
   exit(1);
 }
 
-void enforce_accounting(string User, string Queue, int cores, int nodes, string Project, 
-			int runlimit, Parser_Input *iParse)
+int main (int argc, char *argv[])
 {
+  printf("Start the program!");
+  string User("rubenv");
+  string Queue("normal");
+  //string Project("071859800728");
+  string Project("TAMU072856455022");
+  int cores(24);
+  int nodes(1);
+  int runlimit(900);
 
-//Debugging purposes
-//printf("My Project: %s " , Project.c_str());
-
+  printf("My Project: %s " , Project.c_str());
   printf("--> Checking available allocation ");
 
   if( !Project.empty() )
     printf("(%s)...",Project.c_str());
 
-  fflush(NULL);
-
   string acct_cmd;
   string bypass_account;
+  
+  Parser_Input iParse;
 
-  if(iParse->Read_Var("tacc_filter/accounting_check_binary",&acct_cmd ) )
+  //for (int i = 0; i < argc; ++i)
+  //      cout << argv[i] << endl;
+   
+ 
+  if (!(iParse.Open(argv[1])) )
+      {
+        printf("\nUnable to parse TACC job submission options file. Please contact TACC\n");
+        printf("consulting for assistance.\n\n");
+        exit(1);
+  }
+
+  if(iParse.Read_Var("tacc_filter/accounting_check_binary",&acct_cmd ) )
     {
 
       // allow for possible accounting bypass
 
       std::string user_bypass = "tacc_filter/accounting_bypass/" + User;
 
-      if(iParse->Read_Var(user_bypass.c_str(),&bypass_account) )
+      cout<<endl<<"accout cmd"<< acct_cmd<<endl;
+
+      if(iParse.Read_Var(user_bypass.c_str(),&bypass_account) )
 	{
 	  if(bypass_account == Project)
 	    {
 	      printf("OK (BYPASS GRANTED)\n");
-	      return;
+	      return -1;
 	    } 
 	  else {
 	    printf("FAILED (BYPASS INVALID)\n");
 	    printf("\nPlease verify correct project string or contact TACC consulting.\n\n");
 	    exit(1);
-	    return;
+	    return -1;
 	  }
 	}
 
@@ -88,12 +107,17 @@ void enforce_accounting(string User, string Queue, int cores, int nodes, string 
       check_command << " " << User;
       check_command << " " << Queue;
       check_command << " " << Project;
-//Si added these extra spaces on Jul 12, 2016!!!
-      check_command << " > " << command_results; 
-
+      check_command << "> " << command_results;
 
 //    printf("executing %s\n",check_command.str().c_str());
-      
+     
+       cout<<" here here 6"<<endl; 
+      cout<<check_command<<endl;  
+
+      cout<<" here here 7"<<endl; 
+      printf("%s", check_command.str().c_str());
+      cout<<" here here 8"<<endl;
+
       int cmd_return = system(check_command.str().c_str());
 
       if(cmd_return != 0)
@@ -156,7 +180,8 @@ void enforce_accounting(string User, string Queue, int cores, int nodes, string 
 	stop_on_error();
       }
 
-  return;
+  return 0;
+
 }
 
 

@@ -10,7 +10,7 @@
 rm -rf *.so
 
 currenthost=`hostname -f`
-target=slurmfilter-1.1
+target=slurmfilter-1.5
 
 if [[ $currenthost == *"ls5"* ]]
 then

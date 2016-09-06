@@ -42,6 +42,11 @@ void enforce_queue_limits(string User, string Queue, int cpus, int nodes, int ru
   if (Queue == "gpu" || Queue =="vis")
     cores_per_node = 20;
 
+  if (Queue == "largemem512GB")
+    cores_per_node = 64;
+  
+  if (Queue == "largemem1TB")
+    cores_per_node = 96;
 
   // Only for VM test
   // Remember to remove it for productive machines
